@@ -43,11 +43,11 @@
 - 对于长文本，采用在一个大的CHUNK块切分成为小的sub_chunk块，只存小的向量数据，检索到时返回父类chunk完整输出（也就是我检索到这个小片段，我返回的是这个段的标题+内容）
 - 没采用OCR光学符号识别是因为如果采用这种方式构建，显存会不够，并且响应速度会变慢
 ### 12. 其他文件夹
-- data_pdf：存放原始pdf数据
-- data：清洗后的MARKDOWN数据
-- Chrome_db：向量数据库，如果新增了data，建议删除此文件然后再次运行build_db脚本
-- chat_history：聊天记录存放
-- bad_data：不好的PDF数据
+- data_pdf：存放原始pdf数据（要自己建）
+- data：清洗后的MARKDOWN数据（会在根目录自动创建）
+- Chrome_db：向量数据库，如果新增了data，建议删除此文件然后再次运行build_db脚本（会在根目录自动创建）
+- chat_history：聊天记录存放（会在根目录自动创建）
+- bad_data：不好的PDF数据（要自己建）
 
 # 写在最后
 - 这只是v1.0版本，后续我还会对其进行DLoRA微调，以及multi-Agent复合，并加入graphRAG解决多跳推理问题。
