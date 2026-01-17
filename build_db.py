@@ -7,13 +7,15 @@ from langchain_ollama import OllamaEmbeddings
 from langchain_community.document_loaders import TextLoader
 # 核心组件：结构化切分器
 from langchain_text_splitters import MarkdownHeaderTextSplitter, RecursiveCharacterTextSplitter
+from langchain_community.embeddings import HuggingFaceBgeEmbeddings
 
 # =================配置区域=================
 PERSIST_DIRECTORY = "./chroma_db"
 # 确保这里指向你存放 DeepSeek 清洗后 Markdown 文件的目录
 DATA_DIRECTORY = "./data" 
 BATCH_SIZE = 30
-EMBEDDING_MODEL = "nomic-embed-text"
+# EMBEDDING_MODEL = "nomic-embed-text"
+EMBEDDING_MODEL = "BAAI/bge-m3"
 # =========================================
 
 def intelligent_chunking(documents):
@@ -63,7 +65,6 @@ def intelligent_chunking(documents):
                 sub_splits = text_splitter.split_documents([split])
             
             # Step 3: ★★★ 元数据注入 (Metadata Injection) ★★★
-            # 这是让你的 RAG 变聪明的关键！把标题拼回正文。
             for sub_split in sub_splits:
                 # 从 metadata 提取标题结构
                 title = sub_split.metadata.get("Title", "")
@@ -100,13 +101,20 @@ def build_vector_db():
             print(f"⚠️ 删除失败: {e}，尝试继续...")
 
     # 2. 连接 Embedding
-    print(f"🔌 连接 Ollama Embedding 模型: {EMBEDDING_MODEL}...")
+    print(f"🔌 连接 BGE-M3 模型: {EMBEDDING_MODEL}...")
     try:
-        embeddings = OllamaEmbeddings(model=EMBEDDING_MODEL)
-        # 测试一下连接
+        # 显式指定 device='cpu' 以节省显存
+        # 开启 normalize_embeddings 以优化余弦相似度检索
+        embeddings = HuggingFaceBgeEmbeddings(
+            model_name=EMBEDDING_MODEL,
+            model_kwargs={'device': 'cpu'}, 
+            encode_kwargs={'normalize_embeddings': True}
+        )
+        # 简单测试一下，触发模型下载（如果第一次运行）
         embeddings.embed_query("test")
+        print("✅ BGE-M3 模型加载成功！")
     except Exception as e:
-        print(f"❌ Ollama 连接失败，请检查 ollama serve 是否启动: {e}")
+        print(f"❌ 连接失败，请检查sentence-transformers是否安装: {e}")
         return
 
     # 3. 加载 Markdown 文件
