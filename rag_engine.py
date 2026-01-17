@@ -12,6 +12,7 @@ from langchain_community.document_loaders import PDFPlumberLoader,PyPDFLoader
 import time
 from tqdm import tqdm # 如果没有安装 tqdm，可以把下面的 tqdm(range(...)) 改为 range(...)
 from langchain_core.prompts import ChatPromptTemplate
+from langchain_community.embeddings import HuggingFaceBgeEmbeddings
 
 # ==========================================
 # 1. 资源初始化 (单例模式)
@@ -31,7 +32,19 @@ def setup_knwoledge_base():
     构建工作交由 build_db.py 独立完成。
     """
     persist_directory = "./chroma_db"
-    embeddings = OllamaEmbeddings(model="nomic-embed-text")
+    print("正在加载 BGE-M3 Embedding 模型 (CPU模式)...")
+    
+    model_name = "BAAI/bge-m3"
+    # 🔥 关键点 1: 强制指定 device 为 cpu，把显存全留给 Llama
+    model_kwargs = {'device': 'cpu'} 
+    # 关键点 2: 开启归一化 (BGE 推荐设置)
+    encode_kwargs = {'normalize_embeddings': True}
+    
+    embeddings = HuggingFaceBgeEmbeddings(
+        model_name=model_name,
+        model_kwargs=model_kwargs,
+        encode_kwargs=encode_kwargs
+    )
 
     # 1. 检查数据库是否存在
     if os.path.exists(persist_directory) and len(os.listdir(persist_directory)) > 0:
