@@ -1,10 +1,12 @@
+
+
 # 🌪Chaos_agent -一个支持在个人垂域搭建自己的知识库的agent助手
 ## 🎯 硬件配置
  - 考虑到是在本地部署的轻量级agent，保证电脑显存不小于6GB，本人在1660ti上成功搭建、部署了这个agent。
  - 基座模型选用不超过7B的模型，如果显存大可以替换为参数更大的模型，此次采用Llama3.1 7B模型
  - 编程的IDE为VScode。通过streamlit开源框架编写前端简易AI
  - 需要下载Ollama程序，在终端执行“ollama pull Llama3.1”即可下载对应模型，这一块可以根据自己的显卡下载不同模型
- - 对应的建立向量数据库的embed—moedl为nomic-embed-text
+ - 对应的建立向量数据库的Embedding模型为 BAAI/bge-m3
 ## 📝 各个模块作用 (Key Takeaways)
 ### 1. .env文件
 - 这是一个存放运行API的环境配置文件，将hugging face的API接口放入即可
